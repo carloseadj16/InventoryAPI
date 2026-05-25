@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace InventoryAPI.Application.Products.Queries
+{
+    public record ProductDto(
+        int Id,
+        string Name,
+        string Description,
+        decimal Price,
+        int Stock,
+        int CategoryId,
+        DateTime CreatedAt,
+        DateTime? UpdatedAt
+    );
+}

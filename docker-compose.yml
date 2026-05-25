@@ -1,0 +1,35 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: inventory_db
+    environment:
+      SA_PASSWORD: ${DB_SA_PASSWORD}
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${DB_SA_PASSWORD} -Q 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: inventory_db_init
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./scripts/init.sql:/scripts/init.sql
+    command: >
+      /bin/bash -c "
+      /opt/mssql-tools/bin/sqlcmd -S db -U sa -P ${DB_SA_PASSWORD} -i /scripts/init.sql
+      "
+    restart: on-failure
+
+volumes:
+  sqldata:
