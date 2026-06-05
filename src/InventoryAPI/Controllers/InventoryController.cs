@@ -1,4 +1,5 @@
 ﻿using InventoryAPI.Application.Movs.Commands;
+using InventoryAPI.Controllers.Request;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,8 +19,16 @@ namespace InventoryAPI.Controllers
         }
 
         [HttpPost("movements")]
-        public async Task<IActionResult> RegisterMovement([FromBody] RegisterMovCommand command)
+        public async Task<IActionResult> RegisterMovement([FromBody] RegisterMovementRequest request)
         {
+            var requestId = HttpContext.Request.Headers["Idempotency-Key"].FirstOrDefault() ?? Guid.NewGuid().ToString();
+            var command = new RegisterMovCommand(
+                requestId,
+                request.ProductId,
+                request.Quantity,
+                request.MovementType,
+                request.Reason);
+
             var result = await _mediator.Send(command);
             if (!result.IsSuccess)
                 return BadRequest(result.ErrorMessage);

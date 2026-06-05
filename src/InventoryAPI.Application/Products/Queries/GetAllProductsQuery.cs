@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace InventoryAPI.Application.Products.Queries
 {
-    public record GetAllProductsQuery : IRequest<Result<IEnumerable<ProductDto>>>;
+    public record GetAllProductsQuery(int Page, int PageSize, int? CategoryId = null) : IRequest<Result<PagedResult<ProductDto>>>;
 }

@@ -20,7 +20,7 @@ namespace InventoryAPI.Application.Categories.Queries
 
         public async Task<Result<CategoryDto>> Handle(GetCategoryByIdQuery query, CancellationToken cancellationToken)
         {
-            var category = await _readRepository.GetByIdAsync(query.Id);
+            var category = await _readRepository.GetByIdAsync(query.Id, cancellationToken);
             if (category is null)
                 return Result<CategoryDto>.Failure("Category not found.");
 

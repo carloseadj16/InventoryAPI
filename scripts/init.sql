@@ -14,8 +14,10 @@ BEGIN
         Name        NVARCHAR(100)    NOT NULL,
         Description NVARCHAR(500)    NOT NULL DEFAULT '',
         CreatedAt   DATETIME2        NOT NULL DEFAULT GETUTCDATE(),
-        UpdatedAt   DATETIME2        NULL
+        UpdatedAt   DATETIME2        NULL,
+	Active      INT		     NOT NULL
     );
+    CREATE UNIQUE INDEX UX_Categories_Id ON Categories(Id);
 END
 GO
 
@@ -29,8 +31,10 @@ BEGIN
         Stock       INT              NOT NULL DEFAULT 0,
         CategoryId  INT NOT NULL,
         CreatedAt   DATETIME2        NOT NULL DEFAULT GETUTCDATE(),
-        UpdatedAt   DATETIME2        NULL
+        UpdatedAt   DATETIME2        NULL,
+	Active	    INT		     NOT NULL
     );
+    CREATE UNIQUE INDEX UX_Products_Id ON Products(Id);
 END
 GO
 
@@ -44,5 +48,19 @@ BEGIN
         Reason       NVARCHAR(300)    NOT NULL DEFAULT '',
         CreatedAt    DATETIME2        NOT NULL DEFAULT GETUTCDATE()
     );
+    
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='IdempotencyKeys' AND xtype='U')
+BEGIN
+   CREATE TABLE IdempotencyKeys (
+        Id          UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+        RequestId   NVARCHAR(100)    NOT NULL,
+        Response    NVARCHAR(MAX)    NOT NULL,
+        CreatedAt   DATETIME2        NOT NULL DEFAULT GETUTCDATE()
+   );
+
+   CREATE UNIQUE INDEX UX_IdempotencyKeys_RequestId ON IdempotencyKeys(RequestId);
 END
 GO

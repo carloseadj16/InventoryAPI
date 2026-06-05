@@ -36,14 +36,14 @@ namespace InventoryAPI.Test.Products
             var categoryId = 1;
             var existingProduct = Product.Create("Old Name", "Old Desc", 1.0m, 5, categoryId);
             var command = new UpdateProductCommand(productId, "New Name", "New Desc", 2.0m, categoryId);
-            _readRepositoryMock.Setup(r => r.GetByIdAsync(productId)).ReturnsAsync(existingProduct);
-            _categoryReadRepositoryMock.Setup(r => r.ExistsAsync(categoryId)).ReturnsAsync(true);
-            _writeRepositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Product>())).Returns(Task.CompletedTask);
+            _readRepositoryMock.Setup(r => r.GetByIdAsync(productId, CancellationToken.None)).ReturnsAsync(existingProduct);
+            _categoryReadRepositoryMock.Setup(r => r.ExistsAsync(categoryId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
+            _writeRepositoryMock.Setup(r => r.UpdateAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.IsSuccess.Should().BeTrue();
-            _writeRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Product>()), Times.Once);
+            _writeRepositoryMock.Verify(r => r.UpdateAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace InventoryAPI.Test.Products
         {
             var productId = 1;
             var command = new UpdateProductCommand(productId, "Name", "Desc", 1.0m, 1);
-            _readRepositoryMock.Setup(r => r.GetByIdAsync(productId)).ReturnsAsync((Product?)null);
+            _readRepositoryMock.Setup(r => r.GetByIdAsync(productId, CancellationToken.None)).ReturnsAsync((Product?)null);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 

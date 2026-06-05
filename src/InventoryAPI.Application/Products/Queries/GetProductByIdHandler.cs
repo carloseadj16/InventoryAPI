@@ -20,7 +20,7 @@ namespace InventoryAPI.Application.Products.Queries
 
         public async Task<Result<ProductDto>> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
         {
-            var product = await _readRepository.GetByIdAsync(query.Id);
+            var product = await _readRepository.GetByIdAsync(query.Id, cancellationToken);
             if (product is null)
                 return Result<ProductDto>.Failure("Product not found.");
 

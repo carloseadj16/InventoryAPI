@@ -27,16 +27,16 @@ namespace InventoryAPI.Application.Products.Commands
 
         public async Task<Result<bool>> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
         {
-            var product = await _readRepository.GetByIdAsync(command.Id);
+            var product = await _readRepository.GetByIdAsync(command.Id, cancellationToken);
             if (product is null)
                 return Result<bool>.Failure("Product not found.");
 
-            var categoryExists = await _categoryReadRepository.ExistsAsync(command.CategoryId);
+            var categoryExists = await _categoryReadRepository.ExistsAsync(command.CategoryId, cancellationToken);
             if (!categoryExists)
                 return Result<bool>.Failure("Category not found.");
 
             product.Update(command.Name, command.Description, command.Price, command.CategoryId);
-            await _writeRepository.UpdateAsync(product);
+            await _writeRepository.UpdateAsync(product, cancellationToken);
 
             return Result<bool>.Success(true);
         }

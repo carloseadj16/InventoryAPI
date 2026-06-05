@@ -21,14 +21,16 @@ namespace InventoryAPI.Infraestructure.Repositories.Write
                 ?? throw new InvalidOperationException("Connection string 'Default' not found.");
         }
 
-        public async Task AddAsync(Product product)
+        public async Task<int> AddAsync(Product product, CancellationToken cancellationToken)
         {
             const string sql = @"
-            INSERT INTO Products (Name, Description, Price, Stock, CategoryId, CreatedAt)
-            VALUES (@Name, @Description, @Price, @Stock, @CategoryId, @CreatedAt)";
+            INSERT INTO Products (Name, Description, Price, Stock, CategoryId, CreatedAt,Active)
+            VALUES (@Name, @Description, @Price, @Stock, @CategoryId, @CreatedAt,1);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);
+            ";
 
             using var connection = new SqlConnection(_connectionString);
-            await connection.ExecuteAsync(sql, new
+            return await connection.ExecuteScalarAsync<int>(sql, new
             {
                 product.Name,
                 product.Description,
@@ -39,7 +41,7 @@ namespace InventoryAPI.Infraestructure.Repositories.Write
             });
         }
 
-        public async Task UpdateAsync(Product product)
+        public async Task UpdateAsync(Product product, CancellationToken cancellationToken)
         {
             const string sql = @"
             UPDATE Products
@@ -60,9 +62,9 @@ namespace InventoryAPI.Infraestructure.Repositories.Write
             });
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            const string sql = "DELETE FROM Products WHERE Id = @Id";
+            const string sql = "UPDATE Products SET Active = 0, UpdatedAt = GETDATE() WHERE Id = @Id";
 
             using var connection = new SqlConnection(_connectionString);
             await connection.ExecuteAsync(sql, new { Id = id });

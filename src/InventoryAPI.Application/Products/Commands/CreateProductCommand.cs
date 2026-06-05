@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 namespace InventoryAPI.Application.Products.Commands
 {
     public record CreateProductCommand(
+        string RequestId,
         string Name,
         string Description,
         decimal Price,
         int Stock,
         int CategoryId
-    ) : IRequest<Result<int>>;
+    ) : IRequest<Result<int>>, IIdempotentCommand;
 }

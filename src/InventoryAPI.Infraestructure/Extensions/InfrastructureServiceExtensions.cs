@@ -24,6 +24,7 @@ namespace InventoryAPI.Infraestructure.Extensions
             services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
             services.AddScoped<ICategoryWriteRepository, CategoryWriteRepository>();
             services.AddScoped<IInventoryMovWriteRepository, InventoryMovWriteRepository>();
+            services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
 
             return services;
         }

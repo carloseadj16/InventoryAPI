@@ -22,7 +22,7 @@ namespace InventoryAPI.Application.Categories.Commands
 
         public async Task<Result<bool>> Handle(UpdateCategoryCommand command, CancellationToken cancellationToken)
         {
-            var category = await _readRepository.GetByIdAsync(command.Id);
+            var category = await _readRepository.GetByIdAsync(command.Id, cancellationToken);
             if (category is null)
                 return Result<bool>.Failure("Category not found.");
 

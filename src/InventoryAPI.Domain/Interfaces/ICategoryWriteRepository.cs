@@ -9,7 +9,7 @@ namespace InventoryAPI.Domain.Interfaces
 {
     public interface ICategoryWriteRepository
     {
-        Task AddAsync(Category category);
+        Task<int> AddAsync(Category category);
         Task UpdateAsync(Category category);
         Task DeleteAsync(int id);
     }

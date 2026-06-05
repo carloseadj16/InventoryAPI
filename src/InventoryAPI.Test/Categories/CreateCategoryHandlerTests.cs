@@ -21,7 +21,7 @@ namespace InventoryAPI.Test.Categories
         public async Task Handle_ShouldReturnSuccess_WithNewGuid()
         {
             var command = new CreateCategoryCommand("Electronics", "Electronic products");
-            _writeRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Category>())).Returns(Task.CompletedTask);
+            _writeRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Category>())).ReturnsAsync(1);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -38,7 +38,7 @@ namespace InventoryAPI.Test.Categories
             _writeRepositoryMock
                 .Setup(r => r.AddAsync(It.IsAny<Category>()))
                 .Callback<Category>(c => capturedCategory = c)
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(1);
 
             await _handler.Handle(command, CancellationToken.None);
 

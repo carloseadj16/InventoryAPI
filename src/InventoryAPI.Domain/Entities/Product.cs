@@ -16,6 +16,7 @@ namespace InventoryAPI.Domain.Entities
         public int CategoryId { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime? UpdatedAt { get; private set; }
+        public int Active { get; set; }
 
         public Product() { }
         public static Product Create(string name, string description, decimal price, int stock, int categoryId)
@@ -27,7 +28,8 @@ namespace InventoryAPI.Domain.Entities
                 Price = price,
                 Stock = stock,
                 CategoryId = categoryId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Active = 1
             };
         }
 

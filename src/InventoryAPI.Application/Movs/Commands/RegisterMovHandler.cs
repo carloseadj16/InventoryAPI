@@ -1,6 +1,7 @@
 ﻿using InventoryAPI.Application.Common;
 using InventoryAPI.Domain.Entities;
 using InventoryAPI.Domain.Enums;
+using InventoryAPI.Domain.Exceptions;
 using InventoryAPI.Domain.Interfaces;
 using MediatR;
 using System;
@@ -29,16 +30,15 @@ namespace InventoryAPI.Application.Movs.Commands
 
         public async Task<Result<int>> Handle(RegisterMovCommand command, CancellationToken cancellationToken)
         {
-            var product = await _productReadRepository.GetByIdAsync(command.ProductId);
+            var product = await _productReadRepository.GetByIdAsync(command.ProductId, cancellationToken);
             if (product is null)
-                return Result<int>.Failure("Product not found.");
+                throw new NotFoundException("Product", command.ProductId);
 
             var stockDelta = command.MovementType == MovementType.In ? command.Quantity : -command.Quantity;
             if (product.Stock + stockDelta < 0)
-                return Result<int>.Failure("Insufficient stock for this operation.");
+                throw new BusinessValidationException("Insufficient stock for this operation.");
 
-
-            await _productWriteRepository.UpdateAsync(product);
+            await _productWriteRepository.UpdateAsync(product, cancellationToken);
 
             var movement = InventoryMov.Create(command.ProductId, command.Quantity, command.MovementType, command.Reason);
             await _movementWriteRepository.AddAsync(movement);

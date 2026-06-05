@@ -16,14 +16,16 @@ namespace InventoryAPI.Infraestructure.Repositories.Write
                 ?? throw new InvalidOperationException("Connection string 'Default' not found.");
         }
 
-        public async Task AddAsync(Category category)
+        public async Task<int> AddAsync(Category category)
         {
             const string sql = @"
-            INSERT INTO Categories (Name, Description, CreatedAt)
-            VALUES (@Name, @Description, @CreatedAt)";
+            INSERT INTO Categories (Name, Description, CreatedAt, Active)
+            VALUES (@Name, @Description, @CreatedAt, 1);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);
+            ";
 
             using var connection = new SqlConnection(_connectionString);
-            await connection.ExecuteAsync(sql, new
+            return await connection.ExecuteScalarAsync<int>(sql, new
             {
                 category.Name,
                 category.Description,
@@ -50,7 +52,7 @@ namespace InventoryAPI.Infraestructure.Repositories.Write
 
         public async Task DeleteAsync(int id)
         {
-            const string sql = "DELETE FROM Categories WHERE Id = @Id";
+            const string sql = "UPDATE Categories SET Active = 0, UpdatedAt = GETDATE()  WHERE Id = @Id";
 
             using var connection = new SqlConnection(_connectionString);
             await connection.ExecuteAsync(sql, new { Id = id });

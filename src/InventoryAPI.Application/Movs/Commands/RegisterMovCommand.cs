@@ -11,10 +11,11 @@ using System.Threading.Tasks;
 namespace InventoryAPI.Application.Movs.Commands
 {
     public record RegisterMovCommand(
+        string RequestId,
         int ProductId,
         int Quantity,
         MovementType MovementType,
         string Reason
-    ) : IRequest<Result<int>>;
+    ) : IRequest<Result<int>>, IIdempotentCommand;
 
 }

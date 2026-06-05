@@ -9,8 +9,8 @@ namespace InventoryAPI.Domain.Interfaces
 {
     public interface IProductWriteRepository
     {
-        Task AddAsync(Product product);
-        Task UpdateAsync(Product product);
-        Task DeleteAsync(int id);
+        Task<int> AddAsync(Product product, CancellationToken cancellationToken);
+        Task UpdateAsync(Product product, CancellationToken cancellationToken);
+        Task DeleteAsync(int id, CancellationToken cancellationToken);
     }
 }

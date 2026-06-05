@@ -17,7 +17,7 @@ namespace InventoryAPI.Application.Categories.Commands
 
         public async Task<Result<bool>> Handle(DeleteCategoryCommand command, CancellationToken cancellationToken)
         {
-            var exists = await _readRepository.ExistsAsync(command.Id);
+            var exists = await _readRepository.ExistsAsync(command.Id, cancellationToken);
             if (!exists)
                 return Result<bool>.Failure("Category not found.");
 

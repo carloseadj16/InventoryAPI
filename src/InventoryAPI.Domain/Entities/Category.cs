@@ -13,6 +13,7 @@ namespace InventoryAPI.Domain.Entities
         public string Description { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public int Active { get; set; }
 
         private Category() { }
 
@@ -22,7 +23,8 @@ namespace InventoryAPI.Domain.Entities
             {
                 Name = name,
                 Description = description,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Active = 1
             };
         }
 

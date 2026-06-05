@@ -1,5 +1,6 @@
 ﻿using InventoryAPI.Application.Common;
 using InventoryAPI.Domain.Interfaces;
+using InventoryAPI.Domain.Specifications.Categories;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,8 @@ namespace InventoryAPI.Application.Categories.Queries
 
         public async Task<Result<IEnumerable<CategoryDto>>> Handle(GetAllCategoriesQuery query, CancellationToken cancellationToken)
         {
-            var categories = await _readRepository.GetAllAsync();
+            var spespecification = new ActiveCategoriesSpecification();
+            var categories = await _readRepository.GetAllAsync(spespecification,cancellationToken);
             var dtos = categories.Select(c => new CategoryDto(
                 c.Id,
                 c.Name,

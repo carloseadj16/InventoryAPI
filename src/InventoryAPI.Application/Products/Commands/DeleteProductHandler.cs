@@ -22,11 +22,11 @@ namespace InventoryAPI.Application.Products.Commands
 
         public async Task<Result<bool>> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
         {
-            var exists = await _readRepository.ExistsAsync(command.Id);
+            var exists = await _readRepository.ExistsAsync(command.Id, cancellationToken);
             if (!exists)
                 return Result<bool>.Failure("Product not found.");
 
-            await _writeRepository.DeleteAsync(command.Id);
+            await _writeRepository.DeleteAsync(command.Id, cancellationToken);
 
             return Result<bool>.Success(true);
         }

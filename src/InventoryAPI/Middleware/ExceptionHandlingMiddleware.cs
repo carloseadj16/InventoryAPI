@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using InventoryAPI.Domain.Exceptions;
+using System.Net;
 using System.Text.Json;
 
 namespace InventoryAPI.Middleware
@@ -22,18 +23,35 @@ namespace InventoryAPI.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unhandled exception occurred.");
-                await WriteErrorResponseAsync(context, ex);
+                await HandleExceptionAsync(context, ex);
             }
         }
 
-        private static async Task WriteErrorResponseAsync(HttpContext context, Exception exception)
+        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            var (statusCode, message) = MapException(exception);
 
-            var response = new { error = "An unexpected error occurred.", detail = exception.Message };
+            if (statusCode == (int)HttpStatusCode.InternalServerError)
+                _logger.LogError(exception, "Unhandled exception.");
+
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = statusCode;
+
+            var response = new { error = message };
+
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        }
+
+        private static (int statusCode, string message) MapException(Exception exception)
+        {
+            return exception switch
+            {
+                NotFoundException ex => ((int)HttpStatusCode.NotFound, ex.Message),
+                ConflictException ex => ((int)HttpStatusCode.Conflict, ex.Message),
+                BusinessValidationException ex => (422, ex.Message),
+                OperationCanceledException => ((int)HttpStatusCode.BadRequest, "La solicitud fue cancelada."),
+                _ => ((int)HttpStatusCode.InternalServerError, "Ocurrió un error inesperado.")
+            };
         }
     }
 }

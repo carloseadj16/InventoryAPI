@@ -22,9 +22,9 @@ namespace InventoryAPI.Application.Categories.Commands
         public async Task<Result<int>> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
         {
             var category = Category.Create(command.Name,command.Description);
-            await _writeRepository.AddAsync(category);
+            var Id = await _writeRepository.AddAsync(category);
 
-            return Result<int>.Success(category.Id);
+            return Result<int>.Success(Id);
         }
     }
 }

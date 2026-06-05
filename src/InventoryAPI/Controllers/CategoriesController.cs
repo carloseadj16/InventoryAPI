@@ -54,7 +54,7 @@ namespace InventoryAPI.Controllers
             return result.IsSuccess ? NoContent() : NotFound(result.ErrorMessage);
         }
 
-        [HttpDelete("{id:guid}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _mediator.Send(new DeleteCategoryCommand(id));

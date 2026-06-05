@@ -1,5 +1,6 @@
 ﻿using InventoryAPI.Application.Common;
 using InventoryAPI.Domain.Entities;
+using InventoryAPI.Domain.Exceptions;
 using InventoryAPI.Domain.Interfaces;
 using MediatR;
 using System;
@@ -23,14 +24,14 @@ namespace InventoryAPI.Application.Products.Commands
 
         public async Task<Result<int>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
         {
-            var categoryExists = await _categoryReadRepository.ExistsAsync(command.CategoryId);
+            var categoryExists = await _categoryReadRepository.ExistsAsync(command.CategoryId, cancellationToken);
             if (!categoryExists)
-                return Result<int>.Failure("Category not found.");
+                throw new NotFoundException("Category", command.CategoryId);
 
             var product = Product.Create(command.Name, command.Description, command.Price, command.Stock, command.CategoryId);
-            await _writeRepository.AddAsync(product);
+            var Id = await _writeRepository.AddAsync(product, cancellationToken);
 
-            return Result<int>.Success(product.Id);
+            return Result<int>.Success(Id);
         }
     }
 }
